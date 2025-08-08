@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор персонажей — Век Пепла</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2em;
+    }
+
+    .container {
+      background-color: #1a1a1a;
+      padding: 2em;
+      border-radius: 12px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 15px #000;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e94560;
+    }
+
+    label {
+      display: block;
+      margin: 1em 0 0.3em;
+      font-weight: bold;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 0.7em;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 1em;
+      background-color: #222;
+      color: #eee;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #e94560;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #ff5577;
+    }
+
+    .row {
+      display: flex;
+      gap: 1em;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Генератор персонажей — Век Пепла</h1>
+
+    <label for="name">Имя персонажа</label>
+    <input type="text" id="name" placeholder="Например, Киар или Вол">
+
+    <div class="row">
+      <div>
+        <label for="clan">Клан</label>
+        <select id="clan">
+          <option value="Киаши">Киаши</option>
+          <option value="Тарнеки">Тарнеки</option>
+          <option value="Зел'Рианцы">Зел'Рианцы</option>
+          <option value="Воррумы">Воррумы</option>
+          <option value="Ка'Тори">Ка'Тори</option>
+          <option value="Шаурги">Шаурги</option>
+          <option value="Сайдеронцы">Сайдеронцы</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="class">Класс</label>
+        <select id="class" onchange="updateSubclasses(); autoDistributeAttributes(); calculateHPandAC();">
+          <option value="Следопыт">Следопыт</option>
+          <option value="Вышибала">Вышибала</option>
+          <option value="Охотник">Охотник</option>
+          <option value="Техник">Техник</option>
+          <option value="Медик">Медик</option>
+          <option value="Пророк">Пророк</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="level">Уровень</label>
+        <input type="number" id="level" value="1" min="1" onchange="updateSubclasses();">
+      </div>
+    </div>
+
+    <label for="subclass">Подкласс</label>
+    <select id="subclass" disabled>
+      <option>—</option>
+    </select>
+
+    <label for="bio">Биография</label>
+    <textarea id="bio" rows="4" placeholder="Напишите свою биографию..."></textarea>
+
+    <label>Характеристики</label>
+    <div class="row">
+      <div><input id="str" placeholder="Сила" oninput="calculateHPandAC()"></div>
+      <div><input id="dex" placeholder="Ловкость" oninput="calculateHPandAC()"></div>
+      <div><input id="end" placeholder="Выносливость" oninput="calculateHPandAC()"></div>
+    </div>
+    <div class="row">
+      <div><input id="int" placeholder="Интеллект"></div>
+      <div><input id="cha" placeholder="Харизма"></div>
+      <div><input id="will" placeholder="Воля"></div>
+    </div>
+    <button onclick="autoDistributeAttributes(); calculateHPandAC();">Автораспределение характеристик</button>
+
+    <label for="armor">Тип брони</label>
+    <select id="armor" onchange="calculateHPandAC()">
+      <option value="0">Без брони</option>
+      <option value="1">Простая броня</option>
+      <option value="2">Усиленная броня</option>
+      <option value="4">Легендарная броня</option>
+    </select>
+
+    <div class="row">
+      <div><input id="hp" placeholder="Здоровье (ОЗ)" readonly></div>
+      <div><input id="ac" placeholder="Класс Брони (КБ)" readonly></div>
+    </div>
+  </div>
+
+  <script>
+    const subclasses = {
+      "Следопыт": ["Тень Пустошей", "Крысолов"],
+      "Вышибала": ["Мясник", "Тронутый пламенем"],
+      "Охотник": ["Диверсант", "Опытный охотник"],
+      "Техник": ["Механик", "Подрывник"],
+      "Медик": ["Химик", "Полевой врач"],
+      "Пророк": ["Шёпот Теней", "Контролирующий реальность"]
+    };
+
+    const classPriority = {
+      "Вышибала": ['str', 'end'],
+      "Следопыт": ['dex', 'will'],
+      "Охотник": ['dex', 'int'],
+      "Техник": ['int', 'dex'],
+      "Медик": ['int', 'end'],
+      "Пророк": ['will', 'cha']
+    };
+
+    function updateSubclasses() {
+      const level = parseInt(document.getElementById("level").value);
+      const selectedClass = document.getElementById("class").value;
+      const subclassSelect = document.getElementById("subclass");
+      subclassSelect.innerHTML = "";
+
+      if (level >= 3) {
+        subclassSelect.disabled = false;
+        subclasses[selectedClass].forEach(sub => {
+          const option = document.createElement("option");
+          option.value = sub;
+          option.textContent = sub;
+          subclassSelect.appendChild(option);
+        });
+      } else {
+        subclassSelect.disabled = true;
+        const option = document.createElement("option");
+        option.textContent = "—";
+        subclassSelect.appendChild(option);
+      }
+    }
+
+    function autoDistributeAttributes() {
+      const base = [16, 12, 10, 10, 8, 8];
+      const fields = ['str', 'dex', 'end', 'int', 'cha', 'will'];
+      const selectedClass = document.getElementById("class").value;
+      const priorities = classPriority[selectedClass];
+      const sorted = [...base].sort((a, b) => b - a);
+      const values = {};
+
+      values[priorities[0]] = sorted[0];
+      values[priorities[1]] = sorted[1];
+
+      let index = 2;
+      for (let f of fields) {
+        if (!(f in values)) {
+          values[f] = sorted[index];
+          index++;
+        }
+      }
+
+      const clan = document.getElementById("clan").value;
+      if (clan === "Киаши") { values['will'] += 2; values['end'] -= 1; }
+      else if (clan === "Тарнеки") { values['int'] += 2; }
+      else if (clan === "Зел'Рианцы") { values['str'] += 2; values['int'] -= 1; }
+      else if (clan === "Воррумы") { values['dex'] += 2; }
+      else if (clan === "Ка'Тори") { values['dex'] += 1; values['end'] -= 1; }
+      else if (clan === "Шаурги") { values['will'] += 2; values['cha'] -= 2; }
+      else if (clan === "Сайдеронцы") { values['int'] += 2; }
+
+      fields.forEach(f => {
+        document.getElementById(f).value = values[f];
+      });
+    }
+
+    function calculateHPandAC() {
+      const cls = document.getElementById('class').value;
+      const hpBase = {
+        'Вышибала': 12,
+        'Следопыт': 10,
+        'Охотник': 10,
+        'Техник': 8,
+        'Медик': 8,
+        'Пророк': 6
+      };
+      const end = parseInt(document.getElementById('end').value) || 0;
+      const dex = parseInt(document.getElementById('dex').value) || 0;
+      const armor = parseInt(document.getElementById('armor').value) || 0;
+
+      const getMod = val => Math.floor((val - 10) / 2);
+      const hp = hpBase[cls] + getMod(end);
+      const ac = 10 + getMod(dex) + armor;
+
+      document.getElementById('hp').value = hp;
+      document.getElementById('ac').value = ac;
+    }
+  </script>
+</body>
+</html>
