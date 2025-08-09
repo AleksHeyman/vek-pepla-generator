@@ -6,180 +6,183 @@
   <title>Генератор персонажей — Век Пепла</title>
   <style>
     body{background:#121212;color:#f1f1f1;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;padding:20px;margin:0}
-    h1{color:#f54266;text-align:center;margin:0 0 16px}
+    h1{color: #f5cb42;text-align:center;margin:0 0 16px}
     .container{max-width:860px;margin:0 auto;background:#1e1e1e;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);padding:20px}
     label{display:block;margin-top:12px;font-weight:700}
     input,select,textarea,button{width:100%;margin-top:6px;padding:10px;border-radius:8px;border:1px solid #2c2c2c;background:#222;color:#f1f1f1;font-size:16px}
-    button{background:#f54266;border:none;font-weight:800;cursor:pointer;margin-top:16px}
-    button:hover{background:#ff6b85}
+    button{background: #f5cb42;border:none;font-weight:800;cursor:pointer;margin-top:16px}
+    button:hover{background: #f6d568
+    }
     .row{display:flex;gap:12px;flex-wrap:wrap}
     .row>div{flex:1 1 240px}
-    pre{white-space:pre-wrap;background:#161616;border-left:3px solid #f54266;border-radius:8px;padding:14px;margin-top:16px}
+    pre{white-space:pre-wrap;background:#161616;border-left:3px solid #f5cb42;border-radius:8px;padding:14px;margin-top:16px}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Генератор персонажей — Век Пепла</h1>
+<div class="container">
+  <h1>Генератор персонажей — Век Пепла</h1>
 
-    <label>Имя
-      <input type="text" id="name" placeholder="Например: Вол, Киар, Линnea">
-    </label>
+  <label>Имя
+    <input type="text" id="name" placeholder="Например: Вол, Киар, Линnea">
+  </label>
 
-    <div class="row">
-      <div>
-        <label>Уровень
-          <input type="number" id="level" value="1" min="1" max="20" oninput="handleLevelChange()">
-        </label>
-      </div>
-      <div>
-        <label>Клан
-          <select id="clan">
-            <option>Киаши</option>
-            <option>Тарнеки</option>
-            <option>Зел'Рианцы</option>
-            <option>Воррумы</option>
-            <option>Ка'Тори</option>
-            <option>Шаурги</option>
-            <option>Сайдеронцы</option>
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>Класс
-          <select id="class" onchange="handleClassChange()">
-            <option>Вышибала</option>
-            <option>Следопыт</option>
-            <option>Охотник</option>
-            <option>Техник</option>
-            <option>Медик</option>
-            <option>Пророк</option>
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>Подкласс
-          <select id="subclass" disabled></select>
-        </label>
-      </div>
+  <div class="row">
+    <div>
+      <label>Уровень
+        <input type="number" id="level" value="1" min="1" max="20" oninput="handleLevelChange()">
+      </label>
     </div>
-
-    <div class="row">
-      <div><label>Сила<input type="number" id="strength" placeholder="16"></label></div>
-      <div><label>Ловкость<input type="number" id="dexterity" placeholder="12"></label></div>
-      <div><label>Выносливость<input type="number" id="endurance" placeholder="10"></label></div>
+    <div>
+      <label>Клан
+        <select id="clan">
+          <option>Киаши</option>
+          <option>Тарнеки</option>
+          <option>Зел'Рианцы</option>
+          <option>Воррумы</option>
+          <option>Ка'Тори</option>
+          <option>Шаурги</option>
+          <option>Сайдеронцы</option>
+        </select>
+      </label>
     </div>
-    <div class="row">
-      <div><label>Интеллект<input type="number" id="intellect" placeholder="10"></label></div>
-      <div><label>Харизма<input type="number" id="charisma" placeholder="8"></label></div>
-      <div><label>Воля<input type="number" id="will" placeholder="8"></label></div>
+    <div>
+      <label>Класс
+        <select id="class" onchange="handleClassChange()">
+          <option>Вышибала</option>
+          <option>Следопыт</option>
+          <option>Охотник</option>
+          <option>Техник</option>
+          <option>Медик</option>
+          <option>Пророк</option>
+        </select>
+      </label>
     </div>
-
-    <label>Броня
-      <select id="armor">
-        <option>Без брони</option>
-        <option>Простая броня</option>
-        <option>Усиленная броня</option>
-        <option>Легендарная броня/Артефакт</option>
-      </select>
-    </label>
-
-    <label>Снаряжение
-      <textarea id="equipment" rows="3" placeholder="Обрез, куртка, бинты, нож..."></textarea>
-    </label>
-
-    <button onclick="generateCharacterSheet()">Сгенерировать лист персонажа</button>
-    <button onclick="generateFullCharacter()">Сгенерировать персонажа</button>
-    <pre id="charSheet"></pre>
+    <div>
+      <label>Подкласс
+        <select id="subclass" disabled></select>
+      </label>
+    </div>
   </div>
 
-  <script>
-    const SUBCLASSES = {
-      "Вышибала": ["Мясник", "Тронутый пламенем"],
-      "Следопыт": ["Тень Пустошей", "Крысолов"],
-      "Охотник": ["Диверсант", "Опытный охотник"],
-      "Техник": ["Механик", "Подрывник"],
-      "Медик": ["Химик", "Полевой врач"],
-      "Пророк": ["Шёпот Теней", "Контролирующий реальность"]
-    };
+  <div class="row">
+    <div><label>Сила<input type="number" id="strength" placeholder="16"></label></div>
+    <div><label>Ловкость<input type="number" id="dexterity" placeholder="12"></label></div>
+    <div><label>Выносливость<input type="number" id="endurance" placeholder="10"></label></div>
+  </div>
+  <div class="row">
+    <div><label>Интеллект<input type="number" id="intellect" placeholder="10"></label></div>
+    <div><label>Харизма<input type="number" id="charisma" placeholder="8"></label></div>
+    <div><label>Воля<input type="number" id="will" placeholder="8"></label></div>
+  </div>
 
-    const HP_BASE = { "Вышибала":12, "Следопыт":10, "Охотник":10, "Техник":8, "Медик":8, "Пророк":6 };
+  <label>Броня
+    <select id="armor">
+      <option>Без брони</option>
+      <option>Простая броня</option>
+      <option>Усиленная броня</option>
+      <option>Легендарная броня/Артефакт</option>
+    </select>
+  </label>
 
-    const CLASS_PRIORITY = {
-      "Вышибала": ["strength","endurance","will"],
-      "Следопыт": ["dexterity","will","endurance"],
-      "Охотник": ["dexterity","intellect","strength"],
-      "Техник": ["intellect","dexterity","endurance"],
-      "Медик": ["intellect","will","endurance"],
-      "Пророк": ["will","intellect","charisma"]
-    };
+  <label>Снаряжение
+    <textarea id="equipment" rows="3" placeholder="Обрез, куртка, бинты, нож..."></textarea>
+  </label>
 
-    // 'Внимание' отсутствует среди 6 атрибутов — игнорируем его бонус для Ка'Тори
-    const CLAN_BONUSES = {
-      "Киаши": { will: +2, endurance: -1 },
-      "Тарнеки": { intellect: +2 },
-      "Зел'Рианцы": { strength: +2, intellect: -1 },
-      "Воррумы": { dexterity: +2 },
-      "Ка'Тори": { dexterity: +1, endurance: -1 },
-      "Шаурги": { will: +2, charisma: -2 },
-      "Сайдеронцы": { intellect: +2 }
-    };
+  <!-- Оставили только одну кнопку -->
+  <button onclick="generateFullCharacter()">Сгенерировать персонажа</button>
 
-    const ORDER = ["strength","dexterity","endurance","intellect","charisma","will"];
-    const mod = x => Math.floor((x-10)/2);
+  <pre id="charSheet"></pre>
+</div>
 
-    function handleLevelChange(){
-      const lvl = +document.getElementById("level").value || 1;
-      const sub = document.getElementById("subclass");
-      if (lvl >= 3){ sub.disabled = false; handleClassChange(); }
-      else { sub.disabled = true; sub.innerHTML = ""; }
+<script>
+  const SUBCLASSES = {
+    "Вышибала": ["Мясник", "Тронутый пламенем"],
+    "Следопыт": ["Тень Пустошей", "Крысолов"],
+    "Охотник": ["Диверсант", "Опытный охотник"],
+    "Техник": ["Механик", "Подрывник"],
+    "Медик": ["Химик", "Полевой врач"],
+    "Пророк": ["Шёпот Теней", "Контролирующий реальность"]
+  };
+
+  const HP_BASE = { "Вышибала":12, "Следопыт":10, "Охотник":10, "Техник":8, "Медик":8, "Пророк":6 };
+
+  const CLASS_PRIORITY = {
+    "Вышибала": ["strength","endurance","will"],
+    "Следопыт": ["dexterity","will","endurance"],
+    "Охотник": ["dexterity","intellect","strength"],
+    "Техник": ["intellect","dexterity","endurance"],
+    "Медик": ["intellect","will","endurance"],
+    "Пророк": ["will","intellect","charisma"]
+  };
+
+  // 'Внимание' отсутствует среди 6 атрибутов — игнорируем его бонус для Ка'Тори
+  const CLAN_BONUSES = {
+    "Киаши": { will: +2, endurance: -1 },
+    "Тарнеки": { intellect: +2 },
+    "Зел'Рианцы": { strength: +2, intellect: -1 },
+    "Воррумы": { dexterity: +2 },
+    "Ка'Тори": { dexterity: +1, endurance: -1 },
+    "Шаурги": { will: +2, charisma: -2 },
+    "Сайдеронцы": { intellect: +2 }
+  };
+
+  const ORDER = ["strength","dexterity","endurance","intellect","charisma","will"];
+  const mod = x => Math.floor((x-10)/2);
+
+  function handleLevelChange(){
+    const lvl = +document.getElementById("level").value || 1;
+    const sub = document.getElementById("subclass");
+    if (lvl >= 3){ sub.disabled = false; handleClassChange(); }
+    else { sub.disabled = true; sub.innerHTML = ""; }
+  }
+
+  function handleClassChange(){
+    const cls = document.getElementById("class").value;
+    const lvl = +document.getElementById("level").value || 1;
+    const sub = document.getElementById("subclass");
+    sub.innerHTML = "";
+    if (lvl >= 3){
+      (SUBCLASSES[cls]||[]).forEach(s=>{
+        const o=document.createElement("option"); o.textContent=s; sub.appendChild(o);
+      });
     }
+  }
 
-    function handleClassChange(){
-      const cls = document.getElementById("class").value;
-      const lvl = +document.getElementById("level").value || 1;
-      const sub = document.getElementById("subclass");
-      sub.innerHTML = "";
-      if (lvl >= 3){
-        (SUBCLASSES[cls]||[]).forEach(s=>{
-          const o=document.createElement("option"); o.textContent=s; sub.appendChild(o);
-        });
-      }
-    }
+  // Автоподгон характеристик: 16,12,10,10,8,8 -> по приоритетам класса, затем клановые бонусы
+  function distributeAttributes(){
+    const base = [16,12,10,10,8,8].sort((a,b)=>b-a);
+    const cls = document.getElementById("class").value;
+    const priorities = CLASS_PRIORITY[cls] || [];
+    const remaining = ORDER.filter(a=>!priorities.includes(a));
+    const full = [...priorities, ...remaining];
+    const values = {};
+    for (let i=0;i<ORDER.length;i++){ values[full[i]] = base[i]; }
 
-    function distributeAttributes(){
-      const base = [16,12,10,10,8,8].sort((a,b)=>b-a);
-      const cls = document.getElementById("class").value;
-      const priorities = CLASS_PRIORITY[cls] || [];
-      const remaining = ORDER.filter(a=>!priorities.includes(a));
-      const full = [...priorities, ...remaining];
-      const values = {};
-      for (let i=0;i<ORDER.length;i++){ values[full[i]] = base[i]; }
+    const clan = document.getElementById("clan").value;
+    const bonus = CLAN_BONUSES[clan] || {};
+    Object.keys(bonus).forEach(k => { values[k] = (values[k]||0) + bonus[k]; });
 
-      const clan = document.getElementById("clan").value;
-      const bonus = CLAN_BONUSES[clan] || {};
-      Object.keys(bonus).forEach(k => { values[k] = (values[k]||0) + bonus[k]; });
+    ORDER.forEach(k => document.getElementById(k).value = values[k]);
+  }
 
-      ORDER.forEach(k => document.getElementById(k).value = values[k]);
-    }
+  function generateCharacterSheet(){
+    const name = document.getElementById("name").value || "Безымянный";
+    const level = +document.getElementById("level").value || 1;
+    const clan = document.getElementById("clan").value;
+    const cls = document.getElementById("class").value;
+    const subclass = document.getElementById("subclass").value || "—";
+    const armor = document.getElementById("armor").value;
+    const eq = document.getElementById("equipment").value;
 
-    function generateCharacterSheet(){
-      const name = document.getElementById("name").value || "Безымянный";
-      const level = +document.getElementById("level").value || 1;
-      const clan = document.getElementById("clan").value;
-      const cls = document.getElementById("class").value;
-      const subclass = document.getElementById("subclass").value || "—";
-      const armor = document.getElementById("armor").value;
-      const eq = document.getElementById("equipment").value;
+    const vals = {}, mods = {};
+    ORDER.forEach(k => { vals[k] = +document.getElementById(k).value || 0; mods[k] = mod(vals[k]); });
 
-      const vals = {}, mods = {};
-      ORDER.forEach(k => { vals[k] = +document.getElementById(k).value || 0; mods[k] = mod(vals[k]); });
+    const armorBonus = armor==='Простая броня'?1: armor==='Усиленная броня'?2: armor==='Легендарная броня/Артефакт'?4: 0;
+    const AC = 10 + mods.dexterity + armorBonus;
+    const HP = (HP_BASE[cls]||0) + mods.endurance;
 
-      const armorBonus = armor==='Простая броня'?1: armor==='Усиленная броня'?2: armor==='Легендарная броня/Артефакт'?4: 0;
-      const AC = 10 + mods.dexterity + armorBonus;
-      const HP = (HP_BASE[cls]||0) + mods.endurance;
-
-      document.getElementById("charSheet").textContent =
-`=== Лист Персонажа ===
+    document.getElementById("charSheet").textContent =
+            `=== Лист Персонажа ===
 Имя: ${name}
 Клан: ${clan}
 Класс: ${cls}
@@ -199,13 +202,14 @@
 Броня: ${armor}
 Снаряжение: ${eq}
 ========================`;
-    }
+  }
 
-    function generateFullCharacter(){
-      distributeAttributes();
-      handleLevelChange();
-      generateCharacterSheet();
-    }
-  </script>
+  // ОДНА кнопка: полный цикл
+  function generateFullCharacter(){
+    distributeAttributes();  // автоподгон + клановые бонусы
+    handleLevelChange();     // доступность подкласса
+    generateCharacterSheet();// вывод листа
+  }
+</script>
 </body>
 </html>
